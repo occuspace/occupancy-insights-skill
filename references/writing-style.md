@@ -49,6 +49,19 @@ Round consistently:
 - Percentages: one decimal place if < 10%, otherwise integers.
 - Differences in percentage points use the suffix `pp` to avoid "percent of percent" confusion.
 
+## Sanity-check prose against the numbers
+
+Before finalizing, walk through the prose one more time and confirm each claim is consistent with the numbers it sits next to. The most common failure is small framing inversions where the math is right but the narrative reads as the opposite:
+
+- A TL;DR that says "the building is heavily used" next to a 22% Utilization figure
+- "The workplace working hardest" assigned to the *least*-used space in a building comparison
+- "Strong upward trend" next to a `no_clear_trend` classification
+- "Friday is the busiest day" while the day-of-week table shows Friday is the lowest
+
+If you compute "X is 0.3× Y," then X is *less* than Y — the prose can't say X is "the bigger one" or "working harder." If two numbers contradict the narrative, the numbers win.
+
+A useful self-check: re-read the TL;DR with only the numbers as a skimmer would, ignoring the prose. Does the data alone support the same conclusion? If not, fix the prose before shipping.
+
 ## Recommendations
 
 Recommendations are the part the reader is paying for. Make them earn their space.

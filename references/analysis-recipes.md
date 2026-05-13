@@ -46,6 +46,16 @@ A 7-row × 24-column matrix (or N-hour columns if the operating window is narrow
 - Keep the legend visible and label its units (e.g. "Avg people" or "Avg devices").
 - Don't pick a color that you've already used for another metric in the same report.
 
+## Peaks and percentiles — watch for saturation
+
+Before showing "Average daily peak", "Typical daily peak (P90)", and "Single highest" as three separate metric cards, check whether they actually carry distinct information:
+
+- **If `P90 ≈ max` (within 1-2%)**, the data has a ceiling — a hard cap from declared capacity, a sensor cutoff, or an upstream data clip. Showing P90 and max as separate "headline" cards implies they tell different stories when they don't.
+- When you detect this, **drop the P90 card** and replace it with `Peak ceiling: {max} ({N} days hit this exact value)`. That's more honest about what the data is actually doing — and it's a finding worth flagging in the prose ("the building hits the same ceiling on N out of M days, suggesting a real capacity constraint or an upstream data cap").
+- **If `avg_peak ≈ P90` (within 5%)**, the building's daily peak is unusually consistent — call that out in the prose ("peak occupancy holds within X% of average across the window") rather than reporting both as separate cards.
+
+The general principle: every card on the page should answer a different question. Two cards that always show the same number across this dataset are wasted real estate and read as padding.
+
 ## Utilization
 
 `utilization = count ÷ capacity`
