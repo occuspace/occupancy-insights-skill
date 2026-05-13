@@ -1,16 +1,18 @@
 # HTML reports
 
-When the user asks for a report (deliverable, document, something they will share or save), produce a self-contained HTML file instead of plain markdown. This file gives the recipes.
+**HTML is the default output for any "report" request.** This file gives the recipes.
 
 ## When to render HTML vs. inline markdown
 
+The trigger is the user's wording. If the prompt contains **report, insights report, analysis report, document, deliverable, write-up, memo, brief, summary, send, share, save, export, PDF, email**, or names a deliverable ("HQ March wrap-up", "Q1 review") — render HTML. Don't ask first.
+
 | User intent | Output | Examples |
 |---|---|---|
+| **Anything with the trigger words above** | **Self-contained HTML file** | "Build me a report", "Create an insights document", "Generate a deliverable", "I need something to send to my CEO", "Email me the analysis", "Save the summary" |
 | Quick question, mid-conversation | Inline markdown in chat | "How busy was X last month?", "Any unusual days?", "What's the trend?" |
-| Deliverable, document, file the user will share or save | Self-contained HTML file | "Build me a report", "Create an insights document", "Generate a deliverable", "I need something to send to my CEO", explicit "save to file" / file-naming requests |
 | Single chart, no surrounding analysis | Inline markdown + the chart | "Show me a heatmap of last quarter" |
 
-When in doubt and the request is at all ambiguous, ask once: *"Quick answer in chat, or a full HTML report you can save and share?"* Don't ask if the request clearly leans one way.
+When in doubt, default to HTML. Don't open the conversation with a "quick answer or full report?" question — the user already gave you the data, just produce the report. The only time it's worth asking is mid-conversation, after a quick inline answer, when the user *might* want it written up but hasn't said so.
 
 ## Dependencies — pure HTML by default, CDN only when justified
 

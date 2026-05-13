@@ -90,17 +90,26 @@ Different presence sources count different things. Apply the right framing — s
 
 ## Step 5 — Pick the output format
 
-Match the format to what the user is asking for:
+**The default output for any "report" request is a self-contained HTML file. Do not ask, do not offer a markdown alternative — render HTML and save it to disk.**
+
+Treat the user's wording as the trigger. If the prompt contains *any* of these words or phrases, produce an HTML file:
+
+- **report**, **insights report**, **analysis report**
+- **document**, **deliverable**, **write-up**, **memo**, **brief**, **summary**
+- **send**, **share**, **save**, **export**, **PDF**, **email**
+- a named output ("HQ March wrap-up", "Q1 review for the CEO")
+
+Inline markdown is reserved for narrow follow-ups *inside an existing conversation* — not for first-shot requests. Use it only when:
 
 | User intent | Output |
 |---|---|
-| Quick question, mid-conversation answer | Inline markdown in the chat |
-| Single chart or single metric, no surrounding analysis | Inline markdown plus the chart |
-| Deliverable — "report", "document", "send to my CEO", explicit save-to-file | Self-contained HTML file |
+| Quick question already in flight ("how busy was Tuesday?") | Inline markdown in chat |
+| Single chart, no surrounding analysis ("show me a heatmap") | Inline markdown plus the chart |
+| **Anything containing the words above, OR the user's first message about the data** | **Self-contained HTML file** |
+
+If the request is genuinely ambiguous (no trigger words, but more than a one-liner question), default to HTML rather than asking. Asking adds a turn the user didn't want; HTML is always salvageable as a file the user can ignore.
 
 For HTML reports, follow `references/html-reports.md`. Use `assets/report-template.html` as the skeleton — it includes the Occuspace indigo palette, component classes for every section, a print stylesheet, and a footer with attribution. Default to pure HTML + inline CSS + inline SVG (no external scripts) so the report works offline, in email, and when archived.
-
-When the request is ambiguous, ask once: *"Quick answer in chat, or a full HTML report you can save and share?"*
 
 ## Step 6 — Write the report
 
