@@ -21,7 +21,7 @@ You get back:
 - **Source-aware caveats** — Wi-Fi devices ≠ headcount, badge swipes ≠ occupancy, reservations ≠ presence
 - **Prioritized recommendations** — specific, scoped, testable actions tied to a finding
 
-See [`examples/example-report.md`](examples/example-report.md) for what the output looks like.
+Two output modes: **inline markdown** for quick questions in chat, or a **self-contained HTML report** when you ask for a deliverable. See [`examples/example-report.md`](examples/example-report.md) (chat answer) and [`examples/example-report.html`](examples/example-report.html) (deliverable) for what each looks like.
 
 ## Why we built this
 

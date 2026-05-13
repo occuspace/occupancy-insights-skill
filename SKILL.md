@@ -88,7 +88,21 @@ Different presence sources count different things. Apply the right framing — s
 - **Sensor / camera headcounts** are the closest to true occupancy. Treat as authoritative for instantaneous count.
 - **Reservation data** is intent, not presence. Two of three booked rooms typically sit empty. Report bookings as a *ceiling* on occupancy, not a measurement.
 
-## Step 5 — Write the report
+## Step 5 — Pick the output format
+
+Match the format to what the user is asking for:
+
+| User intent | Output |
+|---|---|
+| Quick question, mid-conversation answer | Inline markdown in the chat |
+| Single chart or single metric, no surrounding analysis | Inline markdown plus the chart |
+| Deliverable — "report", "document", "send to my CEO", explicit save-to-file | Self-contained HTML file |
+
+For HTML reports, follow `references/html-reports.md`. Use `assets/report-template.html` as the skeleton — it includes the Occuspace indigo palette, component classes for every section, a print stylesheet, and a footer with attribution. Default to pure HTML + inline CSS + inline SVG (no external scripts) so the report works offline, in email, and when archived.
+
+When the request is ambiguous, ask once: *"Quick answer in chat, or a full HTML report you can save and share?"*
+
+## Step 6 — Write the report
 
 Follow `references/writing-style.md`. The short version:
 
@@ -101,9 +115,9 @@ Follow `references/writing-style.md`. The short version:
 - Don't reuse the same color for two different metrics in the same chart
 - Recommendations must be specific, actionable, and tied to a finding above
 
-### Output template (interval data)
+### Markdown template for inline answers (interval data)
 
-Use this skeleton when granularity is interval (sub-daily). For daily data, swap the headline metric names per Step 1.
+Use this skeleton when answering inline in chat and granularity is interval (sub-daily). For daily data, swap the headline metric names per Step 1. For HTML reports, use the template at `assets/report-template.html` instead — see `references/html-reports.md`.
 
 ```markdown
 # {Space or Portfolio} — {Date Range}

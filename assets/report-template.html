@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<style>
+  :root {
+    /* Occuspace indigo palette (matches portal heatmap.tsx) */
+    --indigo-1: #FCFCFF;
+    --indigo-3: #D1CFF9;
+    --indigo-5: #A6A1F2;
+    --indigo-7: #7A74EC;
+    --indigo-9: #4F46E5;
+    --indigo-11: #3B35AC;
+    --indigo-13: #282373;
+    --indigo-16: #0A091D;
+    --text: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --bg-soft: #f9fafb;
+    --good: #047857;
+    --warn: #b45309;
+    --bad: #b91c1c;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 56px 40px 96px;
+    line-height: 1.6;
+    background: white;
+    font-size: 15px;
+  }
+  header { margin-bottom: 32px; }
+  header h1 { font-size: 32px; font-weight: 700; margin: 0 0 8px; letter-spacing: -0.02em; }
+  header .subtitle { color: var(--text-muted); font-size: 15px; margin: 0; }
+
+  h2 {
+    font-size: 20px; font-weight: 700; margin: 48px 0 16px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border); letter-spacing: -0.01em;
+  }
+  h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
+  p { margin: 0 0 12px; }
+  a { color: var(--indigo-9); text-decoration: none; border-bottom: 1px solid var(--indigo-5); }
+
+  /* ============== TL;DR callout ============== */
+  .tldr {
+    background: var(--indigo-1);
+    border-left: 3px solid var(--indigo-9);
+    padding: 16px 20px;
+    margin: 24px 0 8px;
+    border-radius: 4px;
+  }
+  .tldr .label {
+    display: inline-block;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--indigo-9); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .tldr p { margin: 0; font-size: 15px; }
+
+  /* ============== Key metrics grid ============== */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .metric-card {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .metric-card .label {
+    font-size: 12px; color: var(--text-muted); margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+  }
+  .metric-card .value { font-size: 24px; font-weight: 700; line-height: 1.1; }
+  .metric-card .context { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ============== Tables ============== */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; background: var(--bg-soft); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ============== DOW horizontal bar chart ============== */
+  .dow-chart { margin: 16px 0; }
+  .dow-row {
+    display: grid; grid-template-columns: 80px 1fr 80px;
+    align-items: center; gap: 12px;
+    padding: 6px 0; border-bottom: 1px solid var(--border);
+  }
+  .dow-row:last-child { border-bottom: none; }
+  .dow-row .day { font-weight: 600; font-size: 13px; }
+  .dow-row .bar-track { background: var(--bg-soft); height: 20px; border-radius: 3px; overflow: hidden; }
+  .dow-row .bar-fill { background: var(--indigo-9); height: 100%; transition: none; }
+  .dow-row .value { text-align: right; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--text-muted); }
+
+  /* ============== Heatmap (DOW x Hour) ============== */
+  .heatmap-wrap { overflow-x: auto; margin: 16px 0; }
+  table.heatmap { border-collapse: separate; border-spacing: 1px; min-width: 100%; }
+  table.heatmap th, table.heatmap td { padding: 0; border: none; background: white; }
+  table.heatmap thead th {
+    font-size: 10px; color: var(--text-muted); font-weight: 600;
+    background: white; padding: 4px 0; text-align: center; min-width: 24px;
+  }
+  table.heatmap tbody th {
+    font-size: 12px; font-weight: 600; padding-right: 8px; text-align: right;
+    color: var(--text); background: white; white-space: nowrap;
+  }
+  table.heatmap td { width: 24px; height: 24px; text-align: center; }
+  .heatmap-legend {
+    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    font-size: 11px; color: var(--text-muted);
+  }
+  .heatmap-legend .gradient {
+    flex: 1; max-width: 200px; height: 8px; border-radius: 2px;
+    background: linear-gradient(to right, var(--indigo-1), var(--indigo-5), var(--indigo-9), var(--indigo-13));
+  }
+
+  /* ============== SVG trend sparkline ============== */
+  .trend-block { display: grid; grid-template-columns: 1fr 200px; gap: 24px; align-items: center; margin: 16px 0; }
+  .trend-block svg { width: 100%; height: 80px; display: block; }
+  .trend-stats { font-size: 13px; }
+  .trend-stats .classification { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .trend-stats .meta { color: var(--text-muted); }
+
+  /* ============== Anomaly cards ============== */
+  .anomalies { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .anomaly-card {
+    border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: white;
+    border-left: 3px solid var(--indigo-7);
+  }
+  .anomaly-card.high { border-left-color: var(--bad); }
+  .anomaly-card.low  { border-left-color: var(--warn); }
+  .anomaly-card .date { font-size: 13px; color: var(--text-muted); }
+  .anomaly-card .headline { font-size: 16px; font-weight: 600; margin: 4px 0 8px; }
+  .anomaly-card .compare { font-size: 13px; color: var(--text-muted); }
+  .anomaly-card .z { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--indigo-9); }
+
+  /* ============== Recommendations ============== */
+  .recs { list-style: none; padding: 0; margin: 16px 0; counter-reset: rec; }
+  .recs li {
+    counter-increment: rec;
+    padding: 14px 16px 14px 56px;
+    border: 1px solid var(--border); border-radius: 6px;
+    margin-bottom: 10px; position: relative; background: white;
+  }
+  .recs li::before {
+    content: counter(rec);
+    position: absolute; left: 16px; top: 14px;
+    width: 28px; height: 28px; line-height: 28px; text-align: center;
+    background: var(--indigo-9); color: white; border-radius: 50%;
+    font-size: 13px; font-weight: 700;
+  }
+  .recs strong { display: block; font-size: 15px; margin-bottom: 4px; }
+  .recs li p { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+  /* ============== Footer ============== */
+  footer {
+    margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--text-muted); text-align: center;
+  }
+  footer a { color: var(--text-muted); border-bottom: none; }
+
+  /* ============== Print ============== */
+  @media print {
+    body { padding: 24px; max-width: none; font-size: 12px; }
+    h1 { font-size: 24px; }
+    h2 { font-size: 16px; margin-top: 24px; page-break-after: avoid; }
+    h3 { font-size: 14px; }
+    .tldr, .metric-card, .anomaly-card, .recs li { page-break-inside: avoid; }
+    a { color: var(--text); text-decoration: none; }
+    table.heatmap td { width: 18px; height: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>{{TITLE}}</h1>
+  <p class="subtitle">{{SUBTITLE: e.g. "Daily badge entries · 30 days observed · {{SOURCE}}"}}</p>
+</header>
+
+<!-- ============== TL;DR ============== -->
+<div class="tldr">
+  <span class="label">TL;DR</span>
+  <p>{{TLDR_PARAGRAPH: one or two sentences with the headline finding and what it implies}}</p>
+</div>
+
+<!-- ============== Key metrics ============== -->
+<h2>Key metrics</h2>
+<div class="metrics-grid">
+  <div class="metric-card">
+    <div class="label">{{LABEL e.g. Average daily peak}}</div>
+    <div class="value">{{VALUE}}</div>
+    <div class="context">{{CONTEXT e.g. 21% of 416 capacity}}</div>
+  </div>
+  <!-- Repeat .metric-card for each headline KPI. 3 to 6 cards is a good count. -->
+</div>
+
+<!-- ============== Patterns ============== -->
+<h2>Patterns</h2>
+
+<h3>By day of week</h3>
+<p>{{1-2 SENTENCES describing busiest/quietest, weekday-vs-weekend gap}}</p>
+<div class="dow-chart">
+  <!-- Repeat .dow-row for each weekday observed. bar-fill width is value/max as a percent. -->
+  <div class="dow-row">
+    <span class="day">Monday</span>
+    <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
+    <span class="value">{{VALUE}}</span>
+  </div>
+  <div class="dow-row">
+    <span class="day">Tuesday</span>
+    <div class="bar-track"><div class="bar-fill" style="width: 88%;"></div></div>
+    <span class="value">{{VALUE}}</span>
+  </div>
+  <!-- ... -->
+</div>
+
+<h3>Day-of-week × hour-of-day heatmap</h3>
+<p>{{ONE SENTENCE describing where the heat clusters}}</p>
+<div class="heatmap-wrap">
+  <table class="heatmap">
+    <thead>
+      <tr>
+        <th></th>
+        <!-- One <th> per hour, e.g. 0-23 or operating window only -->
+        <th>0</th><th>1</th><th>2</th><!-- ... -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Monday</th>
+        <!-- One <td> per cell. Set background to one of the indigo palette stops based on intensity ratio.
+             Use inline styles for cell colors; the LLM should compute the color per cell.
+             Recommended stops: 0.0 -> #FCFCFF, 0.2 -> #D1CFF9, 0.4 -> #A6A1F2, 0.6 -> #4F46E5,
+             0.8 -> #282373, 1.0 -> #0A091D. Interpolate or pick the closest. -->
+        <td style="background: #FCFCFF;"></td>
+        <td style="background: #D1CFF9;"></td>
+        <!-- ... -->
+      </tr>
+      <!-- Repeat <tr> for Tuesday through Sunday in order, top to bottom -->
+    </tbody>
+  </table>
+  <div class="heatmap-legend">
+    <span>0</span>
+    <div class="gradient"></div>
+    <span>{{MAX VALUE}}</span>
+    <span style="margin-left:8px;">Avg {{UNIT e.g. people}}</span>
+  </div>
+</div>
+
+<!-- ============== Trend (only when window is at least 90 days) ============== -->
+<h2>Trend</h2>
+<div class="trend-block">
+  <svg viewBox="0 0 600 80" preserveAspectRatio="none">
+    <!-- Background grid (optional) -->
+    <line x1="0" y1="40" x2="600" y2="40" stroke="#e5e7eb" stroke-width="0.5"/>
+    <!-- Build the polyline from the daily series. Map dates to x in [0, 600], values to y in [80, 0] (inverted).
+         Use stroke="#4F46E5" stroke-width="2" fill="none". -->
+    <polyline points="0,60 50,55 100,52 150,50 200,48 250,45 300,42 350,40 400,38 450,35 500,32 550,30 600,28"
+              stroke="#4F46E5" stroke-width="2" fill="none"/>
+  </svg>
+  <div class="trend-stats">
+    <div class="classification">{{CLASSIFICATION e.g. Increasing}}</div>
+    <div class="meta">{{PERCENT}}% over {{N}} days · R² = {{R_SQUARED}}</div>
+  </div>
+</div>
+<p>{{ONE OR TWO SENTENCES contextualizing the trend. If classification is "no_clear_trend", lead with that and do NOT headline the slope direction.}}</p>
+
+<!-- ============== Notable days ============== -->
+<h2>Notable days</h2>
+<div class="anomalies">
+  <!-- For each flagged anomaly, render a card. Use class="high" for z > 0, "low" for z < 0. -->
+  <div class="anomaly-card high">
+    <div class="date">{{Mon, Mar 11}}</div>
+    <div class="headline">{{384 entries}}</div>
+    <div class="compare">vs. typical Wednesday of {{290}}</div>
+    <div class="z">z = +{{3.05}}</div>
+  </div>
+  <!-- ... -->
+</div>
+
+<!-- ============== Data notes ============== -->
+<h2>Data notes</h2>
+<p>{{Source type and any caveats: Wi-Fi-as-devices, badge-as-entries, capacity overshoots, gaps, no operating-hours filter, etc.}}</p>
+
+<!-- ============== Recommendations ============== -->
+<h2>Recommendations</h2>
+<ol class="recs">
+  <li>
+    <strong>{{HEADLINE: specific, scoped, testable action}}</strong>
+    <p>{{ONE OR TWO SENTENCES of supporting reasoning, tied to a finding above}}</p>
+  </li>
+  <!-- 3 to 5 recommendations. Cap at 5. -->
+</ol>
+
+<footer>
+  Generated with the <a href="https://github.com/occuspace/occupancy-insights-skill">Occupancy Insights skill</a> by <a href="https://occuspace.com">Occuspace</a>. Want richer insight from real-time sensor data, automatic operating-hours discovery, and multi-space rollups? Talk to us.
+</footer>
+
+</body>
+</html>
